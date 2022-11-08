@@ -1,0 +1,70 @@
+{
+    "name": "h-openblock-electron",
+    "version": "0.1.0",
+    "description": "",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron build --inspect",
+        "packages": "rimraf dist && electron-builder --config electron-builder-config.js"
+    },
+    "lint-staged": {
+        "*.{js,jsx,ts,tsx}": [
+            "cross-env NODE_ENV=development eslint --cache"
+        ],
+        "{*.json,.{babelrc,eslintrc,prettierrc,stylelintrc}}": [
+            "prettier --ignore-path .eslintignore --parser json --write"
+        ],
+        "*.{css,scss}": [
+            "stylelint --ignore-path .eslintignore --syntax scss --fix",
+            "prettier --ignore-path .eslintignore --single-quote --write"
+        ],
+        "*.{html,md,yml}": [
+            "prettier --ignore-path .eslintignore --single-quote --write"
+        ]
+    },
+    "author": "makeblockteam",
+    "license": "ISC",
+    "devDependencies": {
+        "@babel/core": "^7.9.0",
+        "@babel/plugin-proposal-class-properties": "^7.12.1",
+        "@babel/preset-env": "^7.9.0",
+        "@types/node": "^13.13.2",
+        "@types/request": "^2.48.4",
+        "@types/rimraf": "^3.0.0",
+        "@typescript-eslint/eslint-plugin": "^2.25.0",
+        "@typescript-eslint/parser": "^2.25.0",
+        "cross-env": "^7.0.2",
+        "electron": "^17.1.1",
+        "electron-builder": "^22.5.1",
+        "electron-notarize": "^1.0.0",
+        "electron-reload": "^1.5.0",
+        "eslint": "^6.8.0",
+        "moment": "^2.25.3",
+        "optimist": "^0.6.1",
+        "rimraf": "^3.0.2",
+        "shebang2-loader": "^1.0.0",
+        "shelljs": "^0.8.3"
+    },
+    "dependencies": {},
+    "prettier": {
+        "overrides": [
+            {
+                "files": [
+                    ".prettierrc",
+                    ".babelrc",
+                    ".eslintrc",
+                    ".stylelintrc"
+                ],
+                "options": {
+                    "parser": "json"
+                }
+            }
+        ],
+        "singleQuote": true
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    }
+}

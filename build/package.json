@@ -1,0 +1,14 @@
+{
+  "name": "gewucode",
+  "releaseType": "beta",
+  "version": "0.1.0",
+  "scripts": {},
+  "description": "",
+  "main": "index.js",
+  "author": "gewucode team",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^16.0.1"
+  }
+}

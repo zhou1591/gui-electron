@@ -1,0 +1,30 @@
+node_modules
+
+# OSX
+.DS_Store
+
+# App packaged
+release
+dist
+build2
+packages
+dll
+appBak
+
+.idea
+npm-debug.log.*
+*.css.d.ts
+*.sass.d.ts
+*.scss.d.ts
+
+# app
+scripts/package-info.json
+dist
+
+
+build/www
+build/node_modules
+
+test.js
+yarn.lock
+package-lock.json
