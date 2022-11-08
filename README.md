@@ -8,7 +8,7 @@ windows系统node必须为32位, 才能打32位exe包（兼容windows 32位系�
 ## 第一次部署项目到本地
 ### 安装依赖
 ```
-yarn i
+npm i
 ```
 
 
