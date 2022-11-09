@@ -1,5 +1,5 @@
 const shell = require('shelljs');
-const appJson = require('../package.json');
+const appJson = require('../build/package.json');
 const moment = require('moment');
 const path = require('path');
 const fs = require('fs');
