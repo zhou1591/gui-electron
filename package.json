@@ -5,7 +5,7 @@
     "main": "main.js",
     "scripts": {
         "start": "electron build --inspect",
-        "packages": "rimraf dist && electron-builder --config electron-builder-config.js"
+        "packages": "rimraf dist && electron-builder  --ia32 --config electron-builder-config.js"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [
@@ -45,7 +45,9 @@
         "shebang2-loader": "^1.0.0",
         "shelljs": "^0.8.3"
     },
-    "dependencies": {},
+    "build":{
+        "prodictName":"小河狸创客(家庭版)"
+    },
     "prettier": {
         "overrides": [
             {

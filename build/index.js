@@ -91,7 +91,8 @@ function createWindow() {
         console.log('serial-port-removed FIRED WITH', port);
     });
 
-    let mainUrl = `file://${path.join(__dirname, './www/index.html')}`;
+    // let mainUrl = `file://${path.join(__dirname, './www/index.html')}`;
+    let mainUrl = `file://${path.join(__dirname, './www/l6Course.html')}`;
     // mainUrl = `file://${path.join(__dirname, './index.html')}`;
 
     // mainUrl = 'http://localhost:8601/';
