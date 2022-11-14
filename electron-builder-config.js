@@ -2,8 +2,8 @@
 
 
 module.exports = {
-  productName: 'Gewucode',
-  appId: 'cc.gewucode',
+  productName: 'Gewucode(L6)',
+  appId: 'l6.cc.gewucode',
   copyright: 'gewucode team',
   asar: false,
   compression: 'maximum',
@@ -90,7 +90,7 @@ module.exports = {
     // 这三行作用：只允许在特定路径安装
     allowAnywhere: false,
     allowCurrentUserHome: false,
-    installLocation: '/Applications/Gewucode'
+    installLocation: '/Applications/Gewucode(L6)'
   },
 
   win: {
