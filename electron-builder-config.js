@@ -1,9 +1,17 @@
 // const appConfig = require('./app/app.json');
 
-
+// 只打包硬件的版本
+const onlyCode =  process.env.packageMode === 'onlyCode'
+const config = {
+  productName:onlyCode?'l6-硬件':'Gewucode(L6)',
+  appId:onlyCode?'onlyCode.gewucode':'l6.gewucode',
+  output:onlyCode?'dist2':'dist',
+  nsis:onlyCode?'./scripts/installer-code.nsh':'./scripts/installer.nsh',
+}
+console.log(config)
 module.exports = {
-  productName: 'Gewucode(L6)',
-  appId: 'l6.cc.gewucode',
+  productName: config.productName,
+  appId: config.appId,
   copyright: 'gewucode team',
   asar: false,
   compression: 'maximum',
@@ -11,8 +19,8 @@ module.exports = {
   // afterSign: './scripts/after-sign.js',
   // afterSign: null,
   afterAllArtifactBuild: './scripts/afterpackage.js',
-  artifactName: 'gewucode-${version}.${ext}',
-  directories: { buildResources: 'resources', output: 'dist', app: 'build' },
+  artifactName: 'gewucode-l6-${version}.${ext}',
+  directories: { buildResources: 'resources', output: config.output, app: 'build' },
   mac: {
     // target: [ 'dmg' ],
     target: ['pkg'],
@@ -141,7 +149,7 @@ module.exports = {
     allowToChangeInstallationDirectory: false,
     oneClick: false,
     menuCategory: true,
-    include: './scripts/installer.nsh',
+    include: config.nsis,
     allowElevation: true,
     perMachine: true,
     createDesktopShortcut: 'always',

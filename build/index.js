@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain, globalShortcut } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, globalShortcut, screen } = require('electron');
 const child = require('child_process');
 
 const path = require('path');
@@ -21,7 +21,9 @@ const realSize = {
     width: 1194,
     height: 834,
 };
+
 function createWindow() {
+
     const mainWindow = new BrowserWindow({
         // width: 1440,
         // height: 800,
@@ -29,27 +31,31 @@ function createWindow() {
         height:realSize.height,
         title: 'Gewucode v0.1',
         icon: path.join(__dirname, './www/static/favicon.png'),
-        frame: false,
         webPreferences: {
             nodeIntegration: false,
-
             contextIsolation: false,
             webSecurity: false,
             preload: path.join(__dirname, 'preload.js'),
         },
     });
-    mainWindow.setMinimumSize(parseInt(realSize.width / 2), parseInt((realSize.height + 30) / 2));
-    mainWindow.setContentSize(realSize.width, realSize.height); //注意此项设置的是ContentSize，此项大小不包括标题栏。
+    mainWindow.setMinimumSize(parseInt(realSize.width*0.9), parseInt((realSize.height*0.9)));
+    // 纵向拉伸
+    const newBounds =  screen.getPrimaryDisplay().workAreaSize
+    const initWidth = parseInt(
+        (realSize.width / realSize.height) * ((newBounds.height-30)*0.95) 
+    )
+    const initHeight = parseInt((newBounds.height-30)*0.95) 
+    mainWindow.setContentSize(initWidth,initHeight); //注意此项设置的是ContentSize，此项大小不包括标题栏。
+
     mainWindow.setMenu(null);
     globalShortcut.register('CommandOrControl+Shift+z',  () => {
         mainWindow.webContents.openDevTools()
     })
-
+    
     mainWindow.webContents.on(
         'select-bluetooth-device',
         (event, deviceList, callback) => {
             event.preventDefault();
-
             console.log(deviceList, deviceList.length);
             console.log('-------------');
             // if (deviceList && deviceList.length > 12) {
@@ -206,26 +212,18 @@ function createWindow() {
      * @Date: 2022-11-14 17:13:47
      * @Description:  监听窗口变化
      */
-    mainWindow.on('will-resize', (event, newBounds) => {
+    mainWindow.on('will-resize',(event, newBounds) => {
         const win = event.sender;
         event.preventDefault(); //拦截，使窗口先不变
         const currentSize = win.getSize();
         const widthChanged = currentSize[0] != newBounds.width; //判断是宽变了还是高变了，两者都变优先按宽适配
-        if (widthChanged) {
-            win.setContentSize(
-                newBounds.width,
-                parseInt(
-                    newBounds.width / (realSize.width / realSize.height) + 0.5
-                )
-            );
-        } else {
-            win.setContentSize(
-                parseInt(
-                    (realSize.width / realSize.height) * newBounds.height + 0.5
-                ),
-                newBounds.height
-            );
-        }
+        const width = widthChanged?newBounds.width:parseInt(
+            (realSize.width / realSize.height) * newBounds.height + 0.5
+        )
+        const height = widthChanged?parseInt(
+            newBounds.width / (realSize.width / realSize.height) + 0.5
+        ):newBounds.height
+        win.setContentSize(width,height);
     });
 }
 

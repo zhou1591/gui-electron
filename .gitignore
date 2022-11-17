@@ -5,7 +5,7 @@ node_modules
 
 # App packaged
 release
-dist
+dist*
 build2
 packages
 dll
