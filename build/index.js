@@ -113,7 +113,7 @@ function createWindow() {
     let mainUrl = `file://${path.join(__dirname, './www/l6Course.html')}`;
     // mainUrl = `file://${path.join(__dirname, './index.html')}`;
 
-    // mainUrl = 'http://localhost:8601/';
+    // let mainUrl = 'http://localhost:9003/l6Course.html';
 
     mainWindow.loadURL(mainUrl);
     // mainWindow.setMenu(null);
@@ -204,7 +204,7 @@ function createWindow() {
     });
     mainWindow.webContents.on('will-navigate', (ev, url) => {
         ev.preventDefault();
-        console.log(url);
+        mainWindow.webContents.send('test', url)
     });
 
     /**
