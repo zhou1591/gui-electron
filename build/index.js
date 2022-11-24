@@ -53,7 +53,9 @@ function createWindow() {
     globalShortcut.register('CommandOrControl+Shift+z',  () => {
         mainWindow.webContents.openDevTools()
     })
-    
+    ipcMain.on('channelForDown', (event, url) => {
+        mainWindow.webContents.downloadURL(url)
+    });
     mainWindow.webContents.on(
         'select-bluetooth-device',
         (event, deviceList, callback) => {
