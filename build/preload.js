@@ -2,7 +2,7 @@
  * @Author: wrp
  * @Date: 2022-11-17 14:51:50
  * @LastEditors: wrp
- * @LastEditTime: 2022-11-17 18:18:01
+ * @LastEditTime: 2022-11-24 15:29:37
  * @Description: 请填写简介
  */
 const { contextBridge, ipcRenderer } = require('electron')
@@ -37,5 +37,8 @@ window.electronAPI = {
     connectBleDevice: (id) => {
         console.log('ddddd', id)
         ipcRenderer.send('channelForSelectingDevice', id)
+    },
+    downloadUrl: (url) => {
+        ipcRenderer.send('channelForDown', url)
     }
 }
