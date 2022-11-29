@@ -3,12 +3,11 @@
 // 只打包硬件的版本
 const onlyCode =  process.env.packageMode === 'onlyCode'
 const config = {
-  productName:onlyCode?'小河狸创客-硬件测试版':'Gewucode(L6)',
+  productName:onlyCode?'小河狸创客-硬件测试版':'小河狸创客',
   appId:onlyCode?'onlyCode.gewucode':'l6.gewucode',
   output:onlyCode?'dist2':'dist',
   nsis:onlyCode?'./scripts/installer-code.nsh':'./scripts/installer.nsh',
 }
-console.log(config)
 module.exports = {
   productName: config.productName,
   appId: config.appId,
