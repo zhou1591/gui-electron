@@ -23,7 +23,7 @@ module.exports = {
   mac: {
     // target: [ 'dmg' ],
     target: ['pkg'],
-    icon: './resources/app-icon/icon.icns',
+    icon: './resources/app-icon/logo.icns',
     hardenedRuntime: true,
     gatekeeperAssess: false,
     entitlements: './entitlements.mac.plist',
@@ -101,7 +101,7 @@ module.exports = {
   },
 
   win: {
-    icon: './resources/app-icon/icon.ico',
+    icon: './resources/app-icon/logo.ico',
     extraFiles: ['./resources'],
     target: [{
       target: 'nsis',
@@ -111,26 +111,26 @@ module.exports = {
     }],
     fileAssociations: [
       {
-        icon: './resources/app-icon/icon.ico',
+        icon: './resources/app-icon/logo.ico',
         ext: 'gewucode',
         name: 'gewucode',
         description: 'gewucode project'
       },
       {
-        icon: './resources/app-icon/icon.ico',
+        icon: './resources/app-icon/logo.ico',
         ext: 'hb',
         name: 'hb',
         description: 'gewucode project'
       },
       {
-        icon: './resources/app-icon/icon.ico',
+        icon: './resources/app-icon/logo.ico',
         ext: 'sb3',
         name: 'sb3',
         description: 'scratch3.0 project'
       }
       ,
       {
-        icon: './resources/app-icon/icon.ico',
+        icon: './resources/app-icon/logo.ico',
         ext: 'sb2',
         name: 'sb2',
         description: 'scratch2.0 project'
