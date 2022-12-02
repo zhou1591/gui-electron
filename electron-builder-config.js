@@ -24,11 +24,12 @@ module.exports = {
     // target: [ 'dmg' ],
     // target: ['pkg'],
     target: [{
-      target: 'nsis',
+      target: 'dir',
       arch: [
         'arm64'
       ]
     }],
+
     icon: './resources/app-icon/logo.icns',
     hardenedRuntime: true,
     gatekeeperAssess: false,
@@ -97,8 +98,6 @@ module.exports = {
     ]
   },
   pkg: {
-    target: "dir", 
-    arch: "arm64",
     scripts: '../scripts/pkg-scripts',
     overwriteAction: 'upgrade',
     isRelocatable: false,
