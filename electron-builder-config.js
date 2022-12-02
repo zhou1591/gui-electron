@@ -26,7 +26,7 @@ module.exports = {
     target: [{
       target: 'nsis',
       arch: [
-        'arm32'
+        'arm64'
       ]
     }],
     icon: './resources/app-icon/logo.icns',
