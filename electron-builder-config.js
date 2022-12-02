@@ -3,7 +3,7 @@
 // 只打包硬件的版本
 const onlyCode =  process.env.packageMode === 'onlyCode'
 const config = {
-  productName:onlyCode?'小河狸创客-硬件测试版':'小河狸创客',
+  productName:onlyCode?'小河狸创客-基础格物板':'小河狸创客',
   appId:onlyCode?'onlyCode.gewucode':'l6.gewucode',
   output:onlyCode?'dist2':'dist',
   nsis:onlyCode?'./scripts/installer-code.nsh':'./scripts/installer.nsh',
@@ -22,7 +22,13 @@ module.exports = {
   directories: { buildResources: 'resources', output: config.output, app: 'build' },
   mac: {
     // target: [ 'dmg' ],
-    target: ['pkg'],
+    // target: ['pkg'],
+    target: [{
+      target: 'nsis',
+      arch: [
+        'arm32'
+      ]
+    }],
     icon: './resources/app-icon/logo.icns',
     hardenedRuntime: true,
     gatekeeperAssess: false,
@@ -91,6 +97,8 @@ module.exports = {
     ]
   },
   pkg: {
+    target: "dir", 
+    arch: "arm64",
     scripts: '../scripts/pkg-scripts',
     overwriteAction: 'upgrade',
     isRelocatable: false,
