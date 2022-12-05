@@ -22,9 +22,8 @@ exports.default = async function (context) {
     }
     let type = temp[temp.length - 1];
     let timefix = moment().format('MMDDHHmm');
-
-    let temp2 = context.configuration.appId.split('.');
-    let newName = `${temp2[temp2.length - 1]}-${appJson.version}-${timefix}.${type}`;
+    
+    let newName = `gewucode-${appJson.version}-${timefix}.${type}`;
     let renameTarget = path.join(context.outDir, newName);
     // console.log(renameTarget);
 

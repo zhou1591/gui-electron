@@ -219,25 +219,25 @@ function createWindow() {
         mainWindow.webContents.send('wxScan', url)
     });
 
-    /**
-     * @Author: zjs
-     * @Date: 2022-11-14 17:13:47
-     * @Description:  监听窗口变化
-     */
-    mainWindow.on('will-resize',(event, newBounds) => {
-        event.preventDefault(); //拦截，使窗口先不变
-        const win = event.sender;
-        const currentSize = win.getSize();
-        const widthChanged = currentSize[0] != newBounds.width; //判断是宽变了还是高变了，两者都变优先按宽适配
-        const width = widthChanged?newBounds.width:parseInt(
-            (realSize.width / realSize.height) * newBounds.height + 0.5
-        )
-        const height = widthChanged?parseInt(
-            newBounds.width / (realSize.width / realSize.height) + 0.5
-        ):newBounds.height
-        resizeTimer=null
-        win.setContentSize(width,height);
-    });
+    // /**
+    //  * @Author: zjs
+    //  * @Date: 2022-11-14 17:13:47
+    //  * @Description:  监听窗口变化
+    //  */
+    // mainWindow.on('will-resize',(event, newBounds) => {
+    //     event.preventDefault(); //拦截，使窗口先不变
+    //     const win = event.sender;
+    //     const currentSize = win.getSize();
+    //     const widthChanged = currentSize[0] != newBounds.width; //判断是宽变了还是高变了，两者都变优先按宽适配
+    //     const width = widthChanged?newBounds.width:parseInt(
+    //         (realSize.width / realSize.height) * newBounds.height + 0.5
+    //     )
+    //     const height = widthChanged?parseInt(
+    //         newBounds.width / (realSize.width / realSize.height) + 0.5
+    //     ):newBounds.height
+    //     resizeTimer=null
+    //     win.setContentSize(width,height);
+    // });
 }
 
 app.whenReady().then(() => {

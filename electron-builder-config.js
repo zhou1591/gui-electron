@@ -3,12 +3,11 @@
 // 只打包硬件的版本
 const onlyCode =  process.env.packageMode === 'onlyCode'
 const config = {
-  productName:onlyCode?'l6-硬件':'Gewucode(L6)',
+  productName:onlyCode?'小河狸创客-基础格物板':'小河狸创客',
   appId:onlyCode?'onlyCode.gewucode':'l6.gewucode',
   output:onlyCode?'dist2':'dist',
   nsis:onlyCode?'./scripts/installer-code.nsh':'./scripts/installer.nsh',
 }
-console.log(config)
 module.exports = {
   productName: config.productName,
   appId: config.appId,
@@ -23,8 +22,15 @@ module.exports = {
   directories: { buildResources: 'resources', output: config.output, app: 'build' },
   mac: {
     // target: [ 'dmg' ],
-    target: ['pkg'],
-    icon: './resources/app-icon/icon.icns',
+    // target: ['pkg'],
+    target: [{
+      target: 'dir',
+      arch: [
+        'arm64'
+      ]
+    }],
+
+    icon: './resources/app-icon/logo.icns',
     hardenedRuntime: true,
     gatekeeperAssess: false,
     entitlements: './entitlements.mac.plist',
@@ -102,7 +108,7 @@ module.exports = {
   },
 
   win: {
-    icon: './resources/app-icon/icon.ico',
+    icon: './resources/app-icon/logo.ico',
     extraFiles: ['./resources'],
     target: [{
       target: 'nsis',
@@ -112,26 +118,26 @@ module.exports = {
     }],
     fileAssociations: [
       {
-        icon: './resources/app-icon/icon.ico',
+        icon: './resources/app-icon/logo.ico',
         ext: 'gewucode',
         name: 'gewucode',
         description: 'gewucode project'
       },
       {
-        icon: './resources/app-icon/icon.ico',
+        icon: './resources/app-icon/logo.ico',
         ext: 'hb',
         name: 'hb',
         description: 'gewucode project'
       },
       {
-        icon: './resources/app-icon/icon.ico',
+        icon: './resources/app-icon/logo.ico',
         ext: 'sb3',
         name: 'sb3',
         description: 'scratch3.0 project'
       }
       ,
       {
-        icon: './resources/app-icon/icon.ico',
+        icon: './resources/app-icon/logo.ico',
         ext: 'sb2',
         name: 'sb2',
         description: 'scratch2.0 project'
