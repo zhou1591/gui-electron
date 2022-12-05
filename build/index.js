@@ -53,6 +53,14 @@ function createWindow() {
     globalShortcut.register('CommandOrControl+Shift+z',  () => {
         mainWindow.webContents.openDevTools()
     })
+    // 下载hb文件
+    globalShortcut.register('CommandOrControl+Shift+s',  () => {
+        mainWindow.webContents.send('saveToComputer')
+    })
+    // 上传文件
+    globalShortcut.register('CommandOrControl+Shift+u',  () => {
+        mainWindow.webContents.send('uploadFile')
+    })
     ipcMain.on('channelForDown', (event, url) => {
         mainWindow.webContents.downloadURL(url)
     });
@@ -208,7 +216,7 @@ function createWindow() {
     });
     mainWindow.webContents.on('will-navigate', (ev, url) => {
         ev.preventDefault();
-        mainWindow.webContents.send('test', url)
+        mainWindow.webContents.send('wxScan', url)
     });
 
     /**
