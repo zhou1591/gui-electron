@@ -75,16 +75,17 @@ function createWindow() {
             // }
             callbackForBluetoothEvent = callback;
 
-            mainWindow.webContents.send(
-                'channelForBluetoothDeviceList',
-                deviceList
-            );
+            // mainWindow.webContents.send(
+            //     'channelForBluetoothDeviceList',
+            //     deviceList
+            // );
             // for (let i = 0; i < deviceList.length; i++) {
             //     if (deviceList[i].deviceId.indexOf('9E') > -1) {
             //         callback(deviceList[i].deviceId);
             //     }
             // }
-            // callback(deviceList[0].deviceId);
+            // xxx 蓝牙
+            callback(deviceList[0].deviceId);
         }
     );
 
