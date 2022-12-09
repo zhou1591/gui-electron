@@ -91,6 +91,7 @@ function createWindow() {
     mainWindow.webContents.session.on(
         'select-serial-port',
         (event, portList, webContents, callback) => {
+            console.log(portList)
             event.preventDefault();
             // callbackForSerialPortEvent = callback
             // mainWindow.webContents.send('serialPortList',portList)
@@ -122,7 +123,7 @@ function createWindow() {
     });
 
     // let mainUrl = `file://${path.join(__dirname, './www/index.html')}`;
-    let mainUrl = `file://${path.join(__dirname, './www/l6Course.html')}`;
+    let mainUrl = `file://${path.join(__dirname, './www/l6Course.html')}`; //xxx
     // mainUrl = `file://${path.join(__dirname, './index.html')}`;
 
     // let mainUrl = 'http://localhost:9003/l6Course.html';
@@ -251,6 +252,14 @@ app.whenReady().then(() => {
         console.log('1', app.getAppPath());
         child.exec(path.join(app.getAppPath(), '../drivers/win', 'SETUP.EXE'));
     });
+    /**
+     * @Author: zjs
+     * @Date: 2022-12-09 18:36:17
+     * @Description: 刷新页面
+     */    
+    ipcMain.on('reload', (event) => {
+        event.sender.reload()
+    });
 
     //cancels Discovery
     ipcMain.on('channelForTerminationSignal', (_) => {
@@ -261,6 +270,7 @@ app.whenReady().then(() => {
 
     //resolves navigator.bluetooth.requestDevice() and stops device discovery
     ipcMain.on('channelForSelectingDevice', (event, id) => {
+        console.log(id)
         callbackForBluetoothEvent(id); //reference to callback of win.webContents.on('select-bluetooth-device'...)
         callbackForBluetoothEvent = null;
 

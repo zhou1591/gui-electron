@@ -26,7 +26,8 @@ window.ipcRenderer = ipcRenderer
 // })
 
 window.electronAPI = {
-        installCh340: () => ipcRenderer.send('installCh340'),
+    reload:()=>ipcRenderer.send('reload'),
+    installCh340: () => ipcRenderer.send('installCh340'),
     handleBleListUpdate: (callback) => {
         ipcRenderer.on('channelForBluetoothDeviceList', callback)
     },
