@@ -85,6 +85,11 @@ function createWindow() {
             //     }
             // }
             // xxx 蓝牙
+            mainWindow.webContents.send(
+                'setBluetoothMac',
+                deviceList[0].deviceId
+            );
+                
             callback(deviceList[0].deviceId);
         }
     );
@@ -124,10 +129,10 @@ function createWindow() {
     });
 
     // let mainUrl = `file://${path.join(__dirname, './www/index.html')}`;
-    let mainUrl = `file://${path.join(__dirname, './www/l6Course.html')}`; //xxx
+    // let mainUrl = `file://${path.join(__dirname, './www/l6Course.html')}`; //xxx
     // mainUrl = `file://${path.join(__dirname, './index.html')}`;
 
-    // let mainUrl = 'http://localhost:9003/l6Course.html';
+    let mainUrl = 'http://localhost:9003/l6Course.html';
 
     mainWindow.loadURL(mainUrl);
     // mainWindow.setMenu(null);

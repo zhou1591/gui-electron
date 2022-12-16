@@ -24,7 +24,9 @@ window.ipcRenderer = ipcRenderer
 //     },
 //     ipcRenderer
 // })
-
+ipcRenderer.on('setBluetoothMac', (event,value)=>{
+    window.__electronStore.bluetoothMac = value
+})
 window.electronAPI = {
     reload:()=>ipcRenderer.send('reload'),
     installCh340: () => ipcRenderer.send('installCh340'),
@@ -42,4 +44,7 @@ window.electronAPI = {
     downloadUrl: (url) => {
         ipcRenderer.send('channelForDown', url)
     }
+}
+window.__electronStore = {
+    bluetoothMac:''
 }
