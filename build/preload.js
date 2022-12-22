@@ -43,7 +43,8 @@ window.electronAPI = {
     offBleListUpdate: (callback) => {
         ipcRenderer.off('channelForBluetoothDeviceList', callback)
     },
-    cancelBle:()=>ipcRenderer.send('channelForTerminationSignal'),
+    // 手动取消蓝牙连接
+    channelBluetoothScanf:(msg)=>ipcRenderer.send('channelBluetoothScanf',msg),
     connectBleDevice: (id) => {
         ipcRenderer.send('channelForSelectingDevice', id)
     },
