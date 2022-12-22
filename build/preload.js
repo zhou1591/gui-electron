@@ -24,9 +24,16 @@ window.ipcRenderer = ipcRenderer
 //     },
 //     ipcRenderer
 // })
+
+/**
+ * @Author: zjs
+ * @Date: 2022-12-20 14:50:01
+ * @Description: 获取蓝牙 mac
+ */
 ipcRenderer.on('setBluetoothMac', (event,value)=>{
     window.__electronStore.bluetoothMac = value
 })
+
 window.electronAPI = {
     reload:()=>ipcRenderer.send('reload'),
     installCh340: () => ipcRenderer.send('installCh340'),
@@ -38,12 +45,11 @@ window.electronAPI = {
     },
     cancelBle:()=>ipcRenderer.send('channelForTerminationSignal'),
     connectBleDevice: (id) => {
-        console.log('ddddd', id)
         ipcRenderer.send('channelForSelectingDevice', id)
     },
     downloadUrl: (url) => {
         ipcRenderer.send('channelForDown', url)
-    }
+    },
 }
 window.__electronStore = {
     bluetoothMac:''

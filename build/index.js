@@ -23,7 +23,6 @@ const realSize = {
 };
 const minWidth = parseInt(realSize.width*0.95)
 const minHeight = parseInt(realSize.height*0.95)
-
 function createWindow() {
 
     const mainWindow = new BrowserWindow({
@@ -40,6 +39,7 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
         },
     });
+
     mainWindow.setMinimumSize(minWidth, minHeight);
     // 纵向拉伸
     const newBounds =  screen.getPrimaryDisplay().workAreaSize
@@ -255,7 +255,6 @@ app.whenReady().then(() => {
     });
 
     ipcMain.on('installCh340', (event) => {
-        console.log('1', app.getAppPath());
         child.exec(path.join(app.getAppPath(), '../drivers/win', 'SETUP.EXE'));
     });
     /**
