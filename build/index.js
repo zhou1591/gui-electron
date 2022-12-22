@@ -5,13 +5,15 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const { getFilterForExtension } = require('./FileFilters');
+const beforeClose = require('./src/beforeClose');
 
 let callbackForBluetoothEvent = null;
 
 app.commandLine.appendSwitch('--ignore-certificate-errors', 'true');
 const gewubanVendorId = '6790';
 const gewubanProductId = '29987';
-
+// 蓝牙扫描回调
+let bluetoothScanfCallback
 if (isWin7()) {
     // 解决win7有些系统白屏的问题
     app.disableHardwareAcceleration();
@@ -21,14 +23,15 @@ const realSize = {
     width: 1194,
     height: 834,
 };
+let mainWindow = null
 const minWidth = parseInt(realSize.width*0.95)
 const minHeight = parseInt(realSize.height*0.95)
-
 function createWindow() {
 
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         // width: 1440,
         // height: 800,
+        show: false,
         width:realSize.width,
         height:realSize.height,
         title: 'Gewucode v0.1',
@@ -40,14 +43,16 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
         },
     });
+    mainWindow.maximize()
     mainWindow.setMinimumSize(minWidth, minHeight);
+    mainWindow.show()
     // 纵向拉伸
-    const newBounds =  screen.getPrimaryDisplay().workAreaSize
-    const initWidth = parseInt(
-        (realSize.width / realSize.height) * ((newBounds.height-30)*0.95) 
-    )
-    const initHeight = parseInt((newBounds.height-30)*0.95) 
-    mainWindow.setContentSize(initWidth,initHeight); //注意此项设置的是ContentSize，此项大小不包括标题栏。
+    // const newBounds =  screen.getPrimaryDisplay().workAreaSize
+    // const initWidth = parseInt(
+    //     (realSize.width / realSize.height) * ((newBounds.height-30)*0.95) 
+    // )
+    // const initHeight = parseInt((newBounds.height-30)*0.95) 
+    // mainWindow.setContentSize(initWidth,initHeight); //注意此项设置的是ContentSize，此项大小不包括标题栏。
 
     mainWindow.setMenu(null);
     globalShortcut.register('CommandOrControl+Shift+z',  () => {
@@ -68,29 +73,17 @@ function createWindow() {
         'select-bluetooth-device',
         (event, deviceList, callback) => {
             event.preventDefault();
-            console.log(deviceList, deviceList.length);
-            console.log('-------------');
-            // if (deviceList && deviceList.length > 12) {
-            //     callback(deviceList[0].deviceId);
-            // }
-            callbackForBluetoothEvent = callback;
-
-            // mainWindow.webContents.send(
-            //     'channelForBluetoothDeviceList',
-            //     deviceList
-            // );
-            // for (let i = 0; i < deviceList.length; i++) {
-            //     if (deviceList[i].deviceId.indexOf('9E') > -1) {
-            //         callback(deviceList[i].deviceId);
-            //     }
-            // }
-            // xxx 蓝牙
-            mainWindow.webContents.send(
-                'setBluetoothMac',
-                deviceList[0].deviceId
-            );
-                
-            callback(deviceList[0].deviceId);
+            console.log(deviceList);
+            bluetoothScanfCallback = callback
+            if(deviceList[0].deviceId){
+                mainWindow.webContents.send(
+                    'setBluetoothMac',
+                    deviceList[0].deviceId
+                );
+                bluetoothScanfCallback=null
+                // 产品坚持不会有多个设备 只要第一个扫描到的符合厂商id 的蓝牙设备
+                callback(deviceList[0].deviceId);
+            }
         }
     );
 
@@ -101,6 +94,8 @@ function createWindow() {
             event.preventDefault();
             // callbackForSerialPortEvent = callback
             // mainWindow.webContents.send('serialPortList',portList)
+            // 产品坚持不会有多个设备 只要第一个扫描到的符合厂商id 
+            // 所以就先取第一个
             for (let i = 0; i < portList.length; i++) {
                 const item = portList[i];
                 if (
@@ -113,7 +108,7 @@ function createWindow() {
             }
             callback(''); //Could not find any matching devices
             dialog.showMessageBox(mainWindow, {
-                title: 'Gewucode',
+                title: '小河狸创客',
                 type: 'warning',
                 message: '未检测到设备插入',
             });
@@ -194,7 +189,7 @@ function createWindow() {
                         // don't clean up until after the message box to allow troubleshooting / recovery
                         await dialog.showMessageBox(mainWindow, {
                             type: 'error',
-                            title: 'Failed to save project',
+                            title: '保存文件失败',
                             message: `Save failed:\n${userChosenPath}`,
                             detail: e.message,
                         });
@@ -207,25 +202,15 @@ function createWindow() {
     );
 
     mainWindow.webContents.on('will-prevent-unload', (ev) => {
-        const choice = dialog.showMessageBoxSync(mainWindow, {
-            title: 'Gewucode(L6)',
-            type: 'question',
-            message: '确定关闭Gewucode(L6)?',
-            detail: '未保存的内容将会丢失',
-            buttons: ['取消', '确定'],
-            cancelId: 0, // closing the dialog means "stay"
-            defaultId: 0, // pressing enter or space without explicitly selecting something means "stay"
-        });
-        const shouldQuit = choice === 1;
-        if (shouldQuit) {
-            ev.preventDefault();
-        }
+        beforeClose(ev,mainWindow)
     });
     mainWindow.webContents.on('will-navigate', (ev, url) => {
         ev.preventDefault();
         mainWindow.webContents.send('wxScan', url)
     });
-
+    mainWindow.on('close', function (event) {
+        beforeClose(event,mainWindow)
+    });
     // /**
     //  * @Author: zjs
     //  * @Date: 2022-11-14 17:13:47
@@ -255,7 +240,6 @@ app.whenReady().then(() => {
     });
 
     ipcMain.on('installCh340', (event) => {
-        console.log('1', app.getAppPath());
         child.exec(path.join(app.getAppPath(), '../drivers/win', 'SETUP.EXE'));
     });
     /**
@@ -267,11 +251,19 @@ app.whenReady().then(() => {
         event.sender.reload()
     });
 
-    //cancels Discovery
-    ipcMain.on('channelForTerminationSignal', (_) => {
-        callbackForBluetoothEvent && callbackForBluetoothEvent(''); //reference to callback of win.webContents.on('select-bluetooth-device'...)
-        callbackForBluetoothEvent = null;
-        console.log('Discovery cancelled');
+    /**
+     * @Author: zjs
+     * @Date: 2022-12-22 18:51:09
+     * @Description: 手动取消蓝牙扫描
+     */    
+    ipcMain.on('channelBluetoothScanf', (event,msg) => {
+        bluetoothScanfCallback?.(''); //reference to callback of win.webContents.on('select-bluetooth-device'...)
+        bluetoothScanfCallback = null;
+        dialog.showMessageBox(mainWindow, {
+            title: '小河狸创客',
+            type: 'warning',
+            message: msg||'蓝牙未扫描到设备，请重试',
+        });
     });
 
     //resolves navigator.bluetooth.requestDevice() and stops device discovery
@@ -282,11 +274,9 @@ app.whenReady().then(() => {
 
         console.log('Device selected, discovery finished');
     });
+
 });
 
-app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit();
-});
 
 function isWin7() {
     // 当前系统版本号

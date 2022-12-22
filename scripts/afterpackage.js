@@ -12,8 +12,6 @@ const packageInfoFilePath = path.join(__dirname, 'package-info.json');
 exports.default = async function (context) {
     let packageInfo = {};
     let packageTarget = context.artifactPaths[1] || context.artifactPaths[0];
-    console.log(context);
-
     console.log('---------- 重命名 --------');
     let temp = packageTarget && packageTarget.split('.') || null;
     if (!temp) {
