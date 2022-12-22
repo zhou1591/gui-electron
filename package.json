@@ -6,7 +6,8 @@
     "scripts": {
         "start": "electron build --inspect",
         "packages": "rimraf dist  && electron-builder  --ia32 --config electron-builder-config.js",
-        "onlyCodepackages": "rimraf dist2 && cross-env packageMode=onlyCode electron-builder  --ia32 --config electron-builder-config.js"
+        "onlyCodepackages": "rimraf dist2 && cross-env packageMode=onlyCode electron-builder  --ia32 --config electron-builder-config.js",
+        "mac": "rm -rf dist && electron-builder --mac --x64 --config electron-builder-config.js"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [
@@ -36,7 +37,7 @@
         "@typescript-eslint/parser": "^2.25.0",
         "cross-env": "^7.0.3",
         "electron": "^17.1.1",
-        "electron-builder": "^22.5.1",
+        "electron-builder": "^23.0.2",
         "electron-notarize": "^1.0.0",
         "electron-reload": "^1.5.0",
         "eslint": "^6.8.0",

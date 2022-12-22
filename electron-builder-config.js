@@ -27,6 +27,8 @@ module.exports = {
       target: 'dir',
       arch: [
         'arm64'
+        // 'universal'
+        // arm64
       ]
     }],
 
@@ -50,31 +52,31 @@ module.exports = {
     },
     fileAssociations: [
       {
-        icon: './resources/app-icon/mk.icns',
+        icon: './resources/app-icon/logo.icns',
         ext: 'gewucode',
         name: 'gewucode',
         description: 'gewucode project'
       },
       {
-        icon: './resources/app-icon/mk.icns',
+        icon: './resources/app-icon/logo.icns',
         ext: 'mcode',
         name: 'mcode',
         description: 'mcode project'
       },
       {
-        icon: './resources/app-icon/sb3.icns',
+        icon: './resources/app-icon/logo.icns',
         ext: 'sb3',
         name: 'sb3',
         description: 'scratch3.0 project'
       },
       {
-        icon: './resources/app-icon/sb2.icns',
+        icon: './resources/app-icon/logo.icns',
         ext: 'sb2',
         name: 'sb2',
         description: 'scratch2.0 project'
       },
       {
-        icon: './resources/app-icon/mext.icns',
+        icon: './resources/app-icon/logo.icns',
         ext: 'mext',
         name: 'mext',
         description: 'gewucode extension'
@@ -82,7 +84,7 @@ module.exports = {
     ]
   },
   dmg: {
-    background: './resources/bg.png',
+    // background: './resources/bg.png',
     sign: false,
     contents: [
       {
