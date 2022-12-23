@@ -6,14 +6,16 @@ const os = require('os');
 const fs = require('fs');
 const { getFilterForExtension } = require('./FileFilters');
 const beforeClose = require('./src/beforeClose');
+const { bluetoothModeEnum } = require('./enum');
 
 let callbackForBluetoothEvent = null;
 
 app.commandLine.appendSwitch('--ignore-certificate-errors', 'true');
-const gewubanVendorId = '6790';
-const gewubanProductId = '29987';
+
 // 蓝牙扫描回调
-let bluetoothScanfCallback
+let bluetoothScanfCallback=null
+// 蓝牙连接模式逻辑
+let bluetoothMode = ''
 if (isWin7()) {
     // 解决win7有些系统白屏的问题
     app.disableHardwareAcceleration();
@@ -26,6 +28,7 @@ const realSize = {
 let mainWindow = null
 const minWidth = parseInt(realSize.width*0.95)
 const minHeight = parseInt(realSize.height*0.95)
+
 function createWindow() {
 
     mainWindow = new BrowserWindow({
@@ -74,16 +77,36 @@ function createWindow() {
         (event, deviceList, callback) => {
             event.preventDefault();
             console.log(deviceList);
-            bluetoothScanfCallback = callback
-            if(deviceList[0].deviceId){
-                mainWindow.webContents.send(
-                    'setBluetoothMac',
-                    deviceList[0].deviceId
-                );
-                bluetoothScanfCallback=null
-                // 产品坚持不会有多个设备 只要第一个扫描到的符合厂商id 的蓝牙设备
-                callback(deviceList[0].deviceId);
+               
+            // L6 蓝牙逻辑
+            const L6bluetooth = ()=>{
+                bluetoothScanfCallback = callback
+                if(deviceList[0].deviceId){
+                    mainWindow.webContents.send(
+                        'setBluetoothMac',
+                        deviceList[0].deviceId
+                    );
+                    bluetoothScanfCallback=null
+                    // 产品坚持不会有多个设备 只要第一个扫描到的符合厂商id 的蓝牙设备
+                    callback(deviceList[0].deviceId);
+                }
             }
+            const config = {
+                [bluetoothModeEnum.L6]:L6bluetooth
+            }
+            const activeConfig = config[bluetoothMode]
+            if(activeConfig){
+                activeConfig()
+                bluetoothMode=null
+                return 
+            }
+
+            // 没有指定逻辑则执行之前的逻辑
+            callbackForBluetoothEvent = callback;
+            mainWindow.webContents.send(
+                'channelForBluetoothDeviceList',
+                deviceList
+            );
         }
     );
 
@@ -92,26 +115,22 @@ function createWindow() {
         (event, portList, webContents, callback) => {
             console.log(portList)
             event.preventDefault();
-            // callbackForSerialPortEvent = callback
-            // mainWindow.webContents.send('serialPortList',portList)
-            // 产品坚持不会有多个设备 只要第一个扫描到的符合厂商id 
-            // 所以就先取第一个
-            for (let i = 0; i < portList.length; i++) {
-                const item = portList[i];
-                if (
-                    item.vendorId === gewubanVendorId &&
-                    item.productId === gewubanProductId
-                ) {
-                    callback(item.portId);
-                    return;
-                }
+            // 设备批次号和商品号
+            const gewubanVendorId = '6790';
+            const gewubanProductId = '29987';
+            // 有且只有一个符合的直接连接
+            const filterPort = portList.filter(el=>el.vendorId===gewubanVendorId&&el.productId===gewubanProductId)
+            // 只有一个直接返回
+            if(filterPort.length ===1){
+               return  callback(filterPort[0].portId);
             }
-            callback(''); //Could not find any matching devices
-            dialog.showMessageBox(mainWindow, {
-                title: '小河狸创客',
-                type: 'warning',
-                message: '未检测到设备插入',
-            });
+            // 有多个或者没有返回列表让用户选
+            allCallback.selectSerialPortCallback = callback
+            // 通知客户端接受本次串口列表
+            mainWindow.webContents.send(
+                'setLastScanfUsbList',
+                {portList,callback}
+            );
         }
     );
 
@@ -250,6 +269,15 @@ app.whenReady().then(() => {
     ipcMain.on('reload', (event) => {
         event.sender.reload()
     });
+    
+    /**
+     * @Author: zjs
+     * @Date: 2022-12-09 18:36:17
+     * @Description: 刷新页面
+     */    
+    ipcMain.on('setBluetoothMode', (event,mode) => {
+        bluetoothMode = mode
+    });
 
     /**
      * @Author: zjs
@@ -265,6 +293,14 @@ app.whenReady().then(() => {
             message: msg||'蓝牙未扫描到设备，请重试',
         });
     });
+
+    //cancels Discovery
+    ipcMain.on('channelForTerminationSignal', (_) => {
+        callbackForBluetoothEvent && callbackForBluetoothEvent(''); //reference to callback of win.webContents.on('select-bluetooth-device'...)
+        callbackForBluetoothEvent = null;
+        console.log('Discovery cancelled');
+    });
+
 
     //resolves navigator.bluetooth.requestDevice() and stops device discovery
     ipcMain.on('channelForSelectingDevice', (event, id) => {
