@@ -8,8 +8,7 @@
 const { contextBridge, ipcRenderer } = require('electron')
 const { bluetoothModeEnum } = require('./enum')
 window.ipcRenderer = ipcRenderer
-// 存储所有事件回调
-const allCallback = {}
+
 
 /**
  * @Author: zjs
@@ -27,7 +26,6 @@ ipcRenderer.on('setBluetoothMac', (event,value)=>{
  */
 ipcRenderer.on('setLastScanfUsbList', (event,{portList,callback})=>{
     window.__electronStore.lastScanfUsbList = portList
-    allCallback.selectSerialPortCallback = callback
     window.dispatchEvent(new Event('__setLastScanfUsbList'));
 })
 
@@ -66,8 +64,16 @@ window.electronAPI = {
      * @Description: usb 选择完毕
      */    
     selectOverPort:(portId)=>{
-        allCallback?.selectSerialPortCallback?.(portId)
-        allCallback.selectSerialPortCallback=null
+        ipcRenderer.send('selectOverPort', portId)
+
+    },
+    /**
+     * @Author: zjs
+     * @Date: 2022-12-26 14:35:10
+     * @Description: 设置是否允许强制关闭窗口
+     */    
+    setNotCloseWin:(val)=>{
+        ipcRenderer.send('setNotCloseWin', val)
     }
 }
 window.__electronStore = {

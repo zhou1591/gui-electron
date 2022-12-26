@@ -28,7 +28,10 @@ const realSize = {
 let mainWindow = null
 const minWidth = parseInt(realSize.width*0.95)
 const minHeight = parseInt(realSize.height*0.95)
-
+// 存储所有事件回调
+const allCallback = {}
+// 存储全局变量
+const allGlobalState = {}
 function createWindow() {
 
     mainWindow = new BrowserWindow({
@@ -124,12 +127,11 @@ function createWindow() {
             if(filterPort.length ===1){
                return  callback(filterPort[0].portId);
             }
-            // 有多个或者没有返回列表让用户选
             allCallback.selectSerialPortCallback = callback
             // 通知客户端接受本次串口列表
             mainWindow.webContents.send(
                 'setLastScanfUsbList',
-                {portList,callback}
+                portList
             );
         }
     );
@@ -221,14 +223,18 @@ function createWindow() {
     );
 
     mainWindow.webContents.on('will-prevent-unload', (ev) => {
-        beforeClose(ev,mainWindow)
+        beforeClose(ev,mainWindow,{
+            notCloseWin:allGlobalState.notCloseWin
+        })
     });
     mainWindow.webContents.on('will-navigate', (ev, url) => {
         ev.preventDefault();
         mainWindow.webContents.send('wxScan', url)
     });
     mainWindow.on('close', function (event) {
-        beforeClose(event,mainWindow)
+        beforeClose(event,mainWindow,{
+            notCloseWin:allGlobalState.notCloseWin
+        })
     });
     // /**
     //  * @Author: zjs
@@ -275,8 +281,27 @@ app.whenReady().then(() => {
      * @Date: 2022-12-09 18:36:17
      * @Description: 刷新页面
      */    
-    ipcMain.on('setBluetoothMode', (event,mode) => {
+     ipcMain.on('setBluetoothMode', (event,mode) => {
         bluetoothMode = mode
+    });
+
+
+    /**
+     * @Author: zjs
+     * @Date: 2022-12-09 18:36:17
+     * @Description: 结束usb选择
+     */    
+    ipcMain.on('selectOverPort', (event,portId) => {
+        allCallback?.selectSerialPortCallback?.(portId)
+        allCallback.selectSerialPortCallback=null
+    });
+    /**
+     * @Author: zjs
+     * @Date: 2022-12-09 18:36:17
+     * @Description: 结束usb选择
+     */    
+     ipcMain.on('setNotCloseWin', (event,val) => {
+        allGlobalState.notCloseWin=val
     });
 
     /**
