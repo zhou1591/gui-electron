@@ -1,3 +1,18 @@
+Function func
+  nsProcessW::_FindProcess "小河狸创客.exe" $R0
+  Pop $0
+  StrCmp $0 "0" 0 +5
+  MessageBox MB_OK "当前有小河狸创客正在运行需要点击关闭.exe"
+  nsProcessW::_KillProcess "小河狸创客.exe"
+  Sleep 2000
+  Call func
+  
+FunctionEnd
+
+!macro customInit
+  Call func
+!macroend
+
 ; 自定义安装位置，安装到公共用户目录，所有用户都有读写权限，可正常增量更新
 !macro preInit
   SetRegView 64
