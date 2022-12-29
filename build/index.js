@@ -261,11 +261,15 @@ function createWindow() {
 
 app.whenReady().then(() => {
     createWindow();
-    autoUpdater.setFeedURL('http://127.0.0.1:5500/update/')
-    autoUpdater.checkForUpdatesAndNotify();
-    autoUpdater.on('update-downloaded', () => {
-        autoUpdater.quitAndInstall();
-    });
+    console.log('old version')
+    if (process.platform == 'win32') {
+        autoUpdater.setFeedURL('https://download.haoqixingstem.com/pcgewu/windows/')
+        autoUpdater.checkForUpdatesAndNotify();
+        autoUpdater.on('update-downloaded', () => {
+            autoUpdater.quitAndInstall();
+        });
+    }
+
 
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();

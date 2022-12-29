@@ -177,6 +177,6 @@ module.exports = {
   },
   publish: {
     provider: 'generic',
-    url: 'http://127.0.0.1:5500/update',
+    url: 'https://download.haoqixingstem.com/pcgewu/',
   }
 };
