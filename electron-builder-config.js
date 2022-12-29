@@ -1,12 +1,12 @@
 // const appConfig = require('./app/app.json');
 
 // 只打包硬件的版本
-const onlyCode =  process.env.packageMode === 'onlyCode'
+const onlyCode = process.env.packageMode === 'onlyCode'
 const config = {
-  productName:onlyCode?'小河狸创客-基础格物板':'小河狸创客',
-  appId:onlyCode?'onlyCode.gewucode':'l6.gewucode',
-  output:onlyCode?'dist2':'dist',
-  nsis:onlyCode?'./scripts/installer-code.nsh':'./scripts/installer.nsh',
+  productName: onlyCode ? '小河狸创客-基础格物板' : '小河狸创客',
+  appId: onlyCode ? 'onlyCode.gewucode' : 'l6.gewucode',
+  output: onlyCode ? 'dist2' : 'dist',
+  nsis: onlyCode ? './scripts/installer-code.nsh' : './scripts/installer.nsh',
 }
 module.exports = {
   productName: config.productName,
@@ -174,5 +174,9 @@ module.exports = {
       'libnss3',
       'libsecret-1-0'
     ]
+  },
+  publish: {
+    provider: 'generic',
+    url: 'https://download.haoqixingstem.com/pcgewu/',
   }
 };

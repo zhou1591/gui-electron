@@ -1,5 +1,7 @@
 const { app, BrowserWindow, dialog, ipcMain, globalShortcut, screen } = require('electron');
 const child = require('child_process');
+const { autoUpdater } = require('electron-updater')
+const http = require('http')
 
 const path = require('path');
 const os = require('os');
@@ -13,7 +15,7 @@ let callbackForBluetoothEvent = null;
 app.commandLine.appendSwitch('--ignore-certificate-errors', 'true');
 
 // 蓝牙扫描回调
-let bluetoothScanfCallback=null
+let bluetoothScanfCallback = null
 // 蓝牙连接模式逻辑
 let bluetoothMode = ''
 if (isWin7()) {
@@ -26,8 +28,8 @@ const realSize = {
     height: 834,
 };
 let mainWindow = null
-const minWidth = parseInt(realSize.width*0.95)
-const minHeight = parseInt(realSize.height*0.95)
+const minWidth = parseInt(realSize.width * 0.95)
+const minHeight = parseInt(realSize.height * 0.95)
 // 存储所有事件回调
 const allCallback = {}
 // 存储全局变量
@@ -38,8 +40,8 @@ function createWindow() {
         // width: 1440,
         // height: 800,
         show: false,
-        width:realSize.width,
-        height:realSize.height,
+        width: realSize.width,
+        height: realSize.height,
         title: 'Gewucode v0.1',
         icon: path.join(__dirname, './www/static/favicon.png'),
         webPreferences: {
@@ -61,15 +63,15 @@ function createWindow() {
     // mainWindow.setContentSize(initWidth,initHeight); //注意此项设置的是ContentSize，此项大小不包括标题栏。
 
     mainWindow.setMenu(null);
-    globalShortcut.register('CommandOrControl+Shift+z',  () => {
+    globalShortcut.register('CommandOrControl+Shift+z', () => {
         mainWindow.webContents.openDevTools()
     })
     // 下载hb文件
-    globalShortcut.register('CommandOrControl+Shift+s',  () => {
+    globalShortcut.register('CommandOrControl+Shift+s', () => {
         mainWindow.webContents.send('saveToComputer')
     })
     // 上传文件
-    globalShortcut.register('CommandOrControl+Shift+u',  () => {
+    globalShortcut.register('CommandOrControl+Shift+u', () => {
         mainWindow.webContents.send('uploadFile')
     })
     ipcMain.on('channelForDown', (event, url) => {
@@ -80,28 +82,28 @@ function createWindow() {
         (event, deviceList, callback) => {
             event.preventDefault();
             console.log(deviceList);
-               
+
             // L6 蓝牙逻辑
-            const L6bluetooth = ()=>{
+            const L6bluetooth = () => {
                 bluetoothScanfCallback = callback
-                if(deviceList[0].deviceId){
+                if (deviceList[0].deviceId) {
                     mainWindow.webContents.send(
                         'setBluetoothMac',
                         deviceList[0].deviceId
                     );
-                    bluetoothScanfCallback=null
+                    bluetoothScanfCallback = null
                     // 产品坚持不会有多个设备 只要第一个扫描到的符合厂商id 的蓝牙设备
                     callback(deviceList[0].deviceId);
                 }
             }
             const config = {
-                [bluetoothModeEnum.L6]:L6bluetooth
+                [bluetoothModeEnum.L6]: L6bluetooth
             }
             const activeConfig = config[bluetoothMode]
-            if(activeConfig){
+            if (activeConfig) {
                 activeConfig()
-                bluetoothMode=null
-                return 
+                bluetoothMode = null
+                return
             }
 
             // 没有指定逻辑则执行之前的逻辑
@@ -122,10 +124,10 @@ function createWindow() {
             const gewubanVendorId = '6790';
             const gewubanProductId = '29987';
             // 有且只有一个符合的直接连接
-            const filterPort = portList.filter(el=>el.vendorId===gewubanVendorId&&el.productId===gewubanProductId)
+            const filterPort = portList.filter(el => el.vendorId === gewubanVendorId && el.productId === gewubanProductId)
             // 只有一个直接返回
-            if(filterPort.length ===1){
-               return  callback(filterPort[0].portId);
+            if (filterPort.length === 1) {
+                return callback(filterPort[0].portId);
             }
             allCallback.selectSerialPortCallback = callback
             // 通知客户端接受本次串口列表
@@ -223,8 +225,8 @@ function createWindow() {
     );
 
     mainWindow.webContents.on('will-prevent-unload', (ev) => {
-        beforeClose(ev,mainWindow,{
-            notCloseWin:allGlobalState.notCloseWin
+        beforeClose(ev, mainWindow, {
+            notCloseWin: allGlobalState.notCloseWin
         })
     });
     mainWindow.webContents.on('will-navigate', (ev, url) => {
@@ -232,8 +234,8 @@ function createWindow() {
         mainWindow.webContents.send('wxScan', url)
     });
     mainWindow.on('close', function (event) {
-        beforeClose(event,mainWindow,{
-            notCloseWin:allGlobalState.notCloseWin
+        beforeClose(event, mainWindow, {
+            notCloseWin: allGlobalState.notCloseWin
         })
     });
     // /**
@@ -259,6 +261,15 @@ function createWindow() {
 
 app.whenReady().then(() => {
     createWindow();
+    console.log('old version')
+    if (process.platform == 'win32') {
+        autoUpdater.setFeedURL('https://download.haoqixingstem.com/pcgewu/windows/')
+        autoUpdater.checkForUpdatesAndNotify();
+        autoUpdater.on('update-downloaded', () => {
+            autoUpdater.quitAndInstall();
+        });
+    }
+
 
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -301,18 +312,18 @@ app.whenReady().then(() => {
      * @Author: zjs
      * @Date: 2022-12-09 18:36:17
      * @Description: 结束usb选择
-     */    
-    ipcMain.on('selectOverPort', (event,portId) => {
+     */
+    ipcMain.on('selectOverPort', (event, portId) => {
         allCallback?.selectSerialPortCallback?.(portId)
-        allCallback.selectSerialPortCallback=null
+        allCallback.selectSerialPortCallback = null
     });
     /**
      * @Author: zjs
      * @Date: 2022-12-09 18:36:17
      * @Description: 结束usb选择
-     */    
-     ipcMain.on('setNotCloseWin', (event,val) => {
-        allGlobalState.notCloseWin=val
+     */
+    ipcMain.on('setNotCloseWin', (event, val) => {
+        allGlobalState.notCloseWin = val
     });
 
     /**
