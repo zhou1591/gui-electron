@@ -22,6 +22,7 @@ scripts/package-info.json
 dist
 
 
+build/assets
 build/www
 build/node_modules
 

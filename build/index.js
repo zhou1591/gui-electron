@@ -145,10 +145,10 @@ function createWindow() {
     });
 
     // let mainUrl = `file://${path.join(__dirname, './www/index.html')}`;
-    let mainUrl = `file://${path.join(__dirname, './www/l6Course.html')}`; //xxx
+    // let mainUrl = `file://${path.join(__dirname, './www/l6Course.html')}`; //xxx
     // mainUrl = `file://${path.join(__dirname, './index.html')}`;
 
-    // let mainUrl = 'http://localhost:9003/l6Course.html';
+    let mainUrl = 'http://localhost:9003/l6Course.html';
 
     mainWindow.loadURL(mainUrl);
     // mainWindow.setMenu(null);
@@ -272,14 +272,25 @@ app.whenReady().then(() => {
      * @Date: 2022-12-09 18:36:17
      * @Description: 刷新页面
      */    
-    ipcMain.on('reload', (event) => {
+     ipcMain.on('reload', (event) => {
         event.sender.reload()
+    });
+    /**
+     * @Author: zjs
+     * @Date: 2022-12-09 18:36:17
+     * @Description: 刷新页面
+     */    
+     ipcMain.on('installMacDrive', (event) => {
+        child.exec(path.join(app.getAppPath(), '../resources/drivers/mac//CH34x_Install_V1.5.pkg'),[],(err)=>{
+            if(!err)return
+            mainWindow.webContents.send('installMacDriveErr');
+        });
     });
     
     /**
      * @Author: zjs
      * @Date: 2022-12-09 18:36:17
-     * @Description: 刷新页面
+     * @Description: 设置蓝牙模式
      */    
      ipcMain.on('setBluetoothMode', (event,mode) => {
         bluetoothMode = mode
@@ -309,14 +320,9 @@ app.whenReady().then(() => {
      * @Date: 2022-12-22 18:51:09
      * @Description: 手动取消蓝牙扫描
      */    
-    ipcMain.on('channelBluetoothScanf', (event,msg) => {
+    ipcMain.on('channelBluetoothScanf', (event) => {
         bluetoothScanfCallback?.(''); //reference to callback of win.webContents.on('select-bluetooth-device'...)
         bluetoothScanfCallback = null;
-        dialog.showMessageBox(mainWindow, {
-            title: '小河狸创客',
-            type: 'warning',
-            message: msg||'蓝牙未扫描到设备，请重试',
-        });
     });
 
     //cancels Discovery
